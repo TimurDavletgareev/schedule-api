@@ -12,6 +12,7 @@ import ru.ktelabs.schedule_service.patient.dto.PatientIdentifierDto;
 import ru.ktelabs.schedule_service.patient.model.Patient;
 import ru.ktelabs.schedule_service.patient.repository.PatientRepository;
 import ru.ktelabs.schedule_service.timeslot.dto.NewScheduleDto;
+import ru.ktelabs.schedule_service.timeslot.dto.ScheduleResponseDto;
 import ru.ktelabs.schedule_service.timeslot.dto.TimeslotFullDto;
 import ru.ktelabs.schedule_service.timeslot.dto.TimeslotMapper;
 import ru.ktelabs.schedule_service.timeslot.model.Timeslot;
@@ -35,7 +36,7 @@ public class TimeslotServiceImpl implements TimeslotService {
 
     @Override
     @Transactional
-    public void addTimeslots(NewScheduleDto newScheduleDto) {
+    public ScheduleResponseDto addTimeslots(NewScheduleDto newScheduleDto) {
 
         log.info("-- Saving new schedule: {}", newScheduleDto);
 
@@ -50,10 +51,20 @@ public class TimeslotServiceImpl implements TimeslotService {
             createdTimeslotsAmount++;
         }
 
+        ScheduleResponseDto dtoToReturn = ScheduleResponseDto.builder()
+                .doctorId(doctor.getId())
+                .date(newScheduleDto.getDate())
+                .startTime(newScheduleDto.getStartTime())
+                .duration(newScheduleDto.getDuration())
+                .amount(createdTimeslotsAmount)
+                .build();
+
         log.info("-- Schedule has been saved: doctor={}, date={}, created slots amount={}",
                 doctor.getLastName() + " " + doctor.getFirstName().charAt(0) + ".",
                 newScheduleDto.getDate(),
                 createdTimeslotsAmount);
+
+        return dtoToReturn;
     }
 
     @Override

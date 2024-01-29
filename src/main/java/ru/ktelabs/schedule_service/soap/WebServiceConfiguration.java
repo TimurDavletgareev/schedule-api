@@ -11,6 +11,7 @@ import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
 import org.springframework.xml.xsd.SimpleXsdSchema;
 import org.springframework.xml.xsd.XsdSchema;
+import ru.ktelabs.schedule_service.util.Constants;
 
 @EnableWs
 @Configuration
@@ -29,7 +30,7 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
         wsdl11Definition.setPortTypeName("SchedulesPort");
         wsdl11Definition.setLocationUri("/ws");
-        wsdl11Definition.setTargetNamespace("https://www.schedule.ktelabs.ru/xml/schedule");
+        wsdl11Definition.setTargetNamespace(Constants.NAMESPACE_URI);
         wsdl11Definition.setSchema(scheduleSchema);
         return wsdl11Definition;
     }
