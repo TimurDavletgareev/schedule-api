@@ -122,7 +122,5 @@ public class TimeslotServiceTest {
 
         assertThrows(ConflictOnRequestException.class, () ->
                 timeslotService.addTimeslots(scheduleWithStartTimeInTheMiddle));
-
-
     }
 }

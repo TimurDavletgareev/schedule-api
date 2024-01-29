@@ -1,6 +1,6 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:tns="https://www.schedule.ktelabs.ru/xml/schedule"
-           targetNamespace="https://www.schedule.ktelabs.ru/xml/schedule"
+           xmlns:tns="https://www.schedule.ktelabs.ru/soap/gen"
+           targetNamespace="https://www.schedule.ktelabs.ru/soap/gen"
            elementFormDefault="qualified">
 
     <xs:element name="addScheduleRequest">
