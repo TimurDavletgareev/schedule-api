@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+
+  server:
+    build: .
+    container_name: schedule_api_container
+    ports:
+      - "80:8080"
+    depends_on:
+      - schedule-db
+    environment:
+      - DB_DRIVER=org.postgresql.Driver
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://schedule-db:5432/schedule-db
+      - DB_USER=schedule-user
+      - DB_PASSWORD=schedulepass
+
+  schedule-db:
+    image: postgres:14-alpine
+    container_name: schedule_db_container
+    ports:
+      - "8765:5432"
+    environment:
+      - POSTGRES_DB=schedule-db
+      - POSTGRES_USER=schedule-user
+      - POSTGRES_PASSWORD=schedulepass
