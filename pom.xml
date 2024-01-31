@@ -12,7 +12,7 @@
 
     <groupId>ru.kte-labs</groupId>
     <artifactId>schedule-API</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0</version>
     <name>schedule-API</name>
     <description>Project for KteLabs</description>
 
