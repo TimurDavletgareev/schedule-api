@@ -70,6 +70,8 @@ public class ScheduleEndpointTest {
                         "</bd:addScheduleRequest>"
         );
 
+        System.out.println("\n" + request + "\n");
+
         StringSource expectedResponse = new StringSource(
                 "<bd:addScheduleResponse xmlns:bd='" + Constants.NAMESPACE_URI + "'>" +
                         "<bd:result>" +
@@ -80,6 +82,8 @@ public class ScheduleEndpointTest {
                         "</bd:result>" +
                         "</bd:addScheduleResponse>"
         );
+
+        System.out.println("\n" + request + "\n");
 
         client.sendRequest(withPayload(request))
                 .andExpect(noFault())
