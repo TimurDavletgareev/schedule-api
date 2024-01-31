@@ -1,5 +1,7 @@
 package ru.ktelabs.schedule_service.timeslot.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.ktelabs.schedule_service.timeslot.model.Timeslot;
@@ -13,7 +15,7 @@ public interface TimeslotRepository extends JpaRepository<Timeslot, Long> {
 
     List<Timeslot> findAllByDoctorIdAndDate(Long doctorId, LocalDate date);
 
-    List<Timeslot> findByPatientId(Long id);
+    Page<Timeslot> findByPatientId(Long id, PageRequest pageRequest);
 
-    List<Timeslot> findByPatientUuid(UUID uuid);
+    Page<Timeslot> findByPatientUuid(UUID uuid, PageRequest pageRequest);
 }

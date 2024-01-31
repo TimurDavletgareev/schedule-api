@@ -18,8 +18,10 @@ public class TimeslotsCreator {
                                         NewScheduleDto newScheduleDto, Doctor doctor) {
 
         LocalDate date = CustomFormatter.stringToDate(newScheduleDto.getDate());
-        LocalTime scheduleStartTime = CustomFormatter.stringToTime(newScheduleDto.getStartTime());
-        LocalTime eachStartTime = scheduleStartTime;
+        assert date != null;
+        LocalTime eachStartTime = CustomFormatter.stringToTime(newScheduleDto.getStartTime());
+        assert eachStartTime != null;
+
         int duration = newScheduleDto.getDuration();
 
         List<Timeslot> existedSlots = timeslotRepository.findAllByDoctorIdAndDate(doctor.getId(), date);
@@ -30,6 +32,7 @@ public class TimeslotsCreator {
 
             Timeslot timeslot = new Timeslot();
 
+            timeslot.setId(createId(doctor.getId(), date, eachStartTime));
             timeslot.setDoctor(doctor);
             timeslot.setDate(date);
             timeslot.setStartTime(eachStartTime);
@@ -41,10 +44,19 @@ public class TimeslotsCreator {
 
             createdSlots.add(timeslot);
 
-            assert eachStartTime != null;
+
             eachStartTime = eachStartTime.plusMinutes(duration);
         }
 
         return createdSlots;
+    }
+
+    private static Long createId(Long doctorId, LocalDate date, LocalTime startTime) {
+
+        String dateString = date.toString().replaceAll("-", "");
+        String startTimeString = startTime.toString().replaceAll(":", "");
+        String idString = doctorId + dateString + startTimeString;
+
+        return Long.parseLong(idString);
     }
 }

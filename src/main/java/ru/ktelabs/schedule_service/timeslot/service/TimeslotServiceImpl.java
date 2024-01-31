@@ -1,11 +1,16 @@
 package ru.ktelabs.schedule_service.timeslot.service;
 
+
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ktelabs.schedule_service.doctor.model.Doctor;
 import ru.ktelabs.schedule_service.doctor.repository.DoctorRepository;
+import ru.ktelabs.schedule_service.error.exception.ConflictOnRequestException;
 import ru.ktelabs.schedule_service.error.exception.IncorrectRequestException;
 import ru.ktelabs.schedule_service.error.exception.NotFoundException;
 import ru.ktelabs.schedule_service.patient.dto.PatientIdentifierDto;
@@ -19,10 +24,10 @@ import ru.ktelabs.schedule_service.timeslot.model.Timeslot;
 import ru.ktelabs.schedule_service.timeslot.repository.TimeslotRepository;
 import ru.ktelabs.schedule_service.timeslot.service.util.TimeslotsCreator;
 import ru.ktelabs.schedule_service.util.CustomFormatter;
+import ru.ktelabs.schedule_service.util.PageRequestCreator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -33,6 +38,8 @@ public class TimeslotServiceImpl implements TimeslotService {
     private final TimeslotRepository timeslotRepository;
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
+    private final EntityManager entityManager;
+    private static final int BATCH_SIZE = 10;
 
     @Override
     @Transactional
@@ -45,9 +52,16 @@ public class TimeslotServiceImpl implements TimeslotService {
 
         int createdTimeslotsAmount = 0;
 
+        // batch insert created timeslots to database
         for (Timeslot timeslot : TimeslotsCreator.create(timeslotRepository, newScheduleDto, doctor)) {
 
-            timeslotRepository.save(timeslot);
+            if (createdTimeslotsAmount > 0 && createdTimeslotsAmount % BATCH_SIZE == 0) {
+                entityManager.flush();
+                entityManager.clear();
+            }
+
+            entityManager.persist(timeslot);
+
             createdTimeslotsAmount++;
         }
 
@@ -77,11 +91,10 @@ public class TimeslotServiceImpl implements TimeslotService {
         }
 
         LocalDate date;
-
-        if (dateString == null) {
-            date = LocalDate.now();
-        } else {
-            date = CustomFormatter.stringToDate(dateString);
+        date = CustomFormatter.stringToDate(dateString);
+        assert date != null;
+        if (date.isBefore(LocalDate.now())) {
+            throw new ConflictOnRequestException("- Date cannot be before current date");
         }
 
         List<TimeslotFullDto> listToReturn = new ArrayList<>();
@@ -111,7 +124,7 @@ public class TimeslotServiceImpl implements TimeslotService {
                 new NotFoundException("- TimeslotId not found: " + timeslotId));
 
         if (timeslot.getPatient() != null) {
-            throw new IncorrectRequestException("- Slot already busy by patientId=" + timeslot.getPatient().getId());
+            throw new ConflictOnRequestException("- Slot already busy by patientId=" + timeslot.getPatient().getId());
         }
 
         Patient patient = patientRepository.findById(patientId).orElseThrow(() ->
@@ -149,25 +162,26 @@ public class TimeslotServiceImpl implements TimeslotService {
     }
 
     @Override
-    public List<TimeslotFullDto> getSlotsByPatientIdOrUuid(PatientIdentifierDto patientIdentifierDto) {
+    public List<TimeslotFullDto> getSlotsByPatientIdOrUuid(PatientIdentifierDto patientIdentifierDto,
+                                                           int from, int size) {
 
-        log.info("-- Returning timeslots by PatientIdentifierDto={}", patientIdentifierDto);
+        log.info("-- Returning timeslots by PatientIdentifier={}", patientIdentifierDto);
 
         List<TimeslotFullDto> listToReturn;
-        List<Timeslot> foundSlots;
+        Iterable<Timeslot> foundSlots;
+
+        Sort sort = Sort.by("date").and(Sort.by("startTime"));
+        PageRequest pageRequest = PageRequestCreator.create(from, size, sort);
 
         if (patientIdentifierDto.getId() != null) {
-
-            foundSlots = timeslotRepository.findByPatientId(patientIdentifierDto.getId());
+            foundSlots = timeslotRepository.findByPatientId(patientIdentifierDto.getId(), pageRequest);
         } else {
-            foundSlots = timeslotRepository.findByPatientUuid(patientIdentifierDto.getUuid());
+            foundSlots = timeslotRepository.findByPatientUuid(patientIdentifierDto.getUuid(), pageRequest);
         }
-
-        foundSlots.sort(Comparator.comparing(Timeslot::getId));
 
         listToReturn = TimeslotMapper.modelToFullDto(foundSlots);
 
-        log.info("-- List of slots by PatientIdentifierDto={} returned, size={}",
+        log.info("-- List of slots by PatientIdentifier={} returned, size={}",
                 patientIdentifierDto, listToReturn.size());
 
         return listToReturn;
@@ -185,7 +199,7 @@ public class TimeslotServiceImpl implements TimeslotService {
 
         TimeslotFullDto dtoToShowInLog = TimeslotMapper.modelToFullDto(timeslotToDelete);
 
-        patientRepository.deleteById(timeslotId);
+        timeslotRepository.deleteById(timeslotId);
 
         log.info("-- Timeslot deleted: {}", dtoToShowInLog);
     }

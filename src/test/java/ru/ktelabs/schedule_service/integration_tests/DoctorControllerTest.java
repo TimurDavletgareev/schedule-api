@@ -68,37 +68,45 @@ class DoctorControllerTest {
     @Test
     void shouldGetAll() {
 
-        String testName = "name1";
+        String testName1 = "B-name";
         DoctorFullDto doctorDto1 = doctorController.addDoctor(
                 NewDoctorDto.builder()
-                        .firstName(testName)
-                        .secondName(testName)
-                        .lastName(testName)
+                        .firstName(testName1)
+                        .secondName(testName1)
+                        .lastName(testName1)
                         .build());
 
-        testName = "name2";
+        String testName2 = "C-name";
         DoctorFullDto doctorDto2 = doctorController.addDoctor(
                 NewDoctorDto.builder()
-                        .firstName(testName)
-                        .secondName(testName)
-                        .lastName(testName)
+                        .firstName(testName2)
+                        .secondName(testName2)
+                        .lastName(testName2)
                         .build());
 
-        testName = "name3";
+        String testName3 = "A-name";
         DoctorFullDto doctorDto3 = doctorController.addDoctor(
                 NewDoctorDto.builder()
-                        .firstName(testName)
-                        .secondName(testName)
-                        .lastName(testName)
+                        .firstName(testName3)
+                        .secondName(testName3)
+                        .lastName(testName3)
                         .build());
 
+        // sorted by default (id), should return by test names: 1-2-3
         List<DoctorFullDto> foundDoctors = doctorController.getAll("null", 0, 10);
 
         assertEquals(3, foundDoctors.size());
-        assertEquals("name1", foundDoctors.get(0).getFirstName());
-        assertEquals("name2", foundDoctors.get(1).getFirstName());
-        assertEquals("name3", foundDoctors.get(2).getFirstName());
+        assertEquals(testName1, foundDoctors.get(0).getFirstName());
+        assertEquals(testName2, foundDoctors.get(1).getFirstName());
+        assertEquals(testName3, foundDoctors.get(2).getFirstName());
 
+        // sorted by firstname, should return by test names: 3-1-2
+        foundDoctors = doctorController.getAll("first_name", 0, 10);
+
+        assertEquals(3, foundDoctors.size());
+        assertEquals(testName3, foundDoctors.get(0).getFirstName());
+        assertEquals(testName1, foundDoctors.get(1).getFirstName());
+        assertEquals(testName2, foundDoctors.get(2).getFirstName());
     }
 
     @Test
