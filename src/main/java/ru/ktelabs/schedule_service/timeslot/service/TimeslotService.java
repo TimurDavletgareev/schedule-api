@@ -17,7 +17,7 @@ public interface TimeslotService {
 
     TimeslotFullDto cleanById(Long timeslotId);
 
-    List<TimeslotFullDto> getSlotsByPatientIdOrUuid(PatientIdentifierDto patientIdentifierDto);
+    List<TimeslotFullDto> getSlotsByPatientIdOrUuid(PatientIdentifierDto patientIdentifierDto, int from, int size);
 
     void removeById(Long timeslotId);
 }

@@ -12,7 +12,6 @@ import ru.ktelabs.schedule_service.error.exception.NotFoundException;
 import ru.ktelabs.schedule_service.patient.controller.PatientController;
 import ru.ktelabs.schedule_service.patient.dto.NewPatientDto;
 import ru.ktelabs.schedule_service.patient.dto.PatientFullDto;
-import ru.ktelabs.schedule_service.util.CustomFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -47,8 +46,7 @@ class PatientControllerTest {
         assertEquals(properNewPatientDto.getFirstName(), patientDtoToCheck.getFirstName());
         assertEquals(properNewPatientDto.getSecondName(), patientDtoToCheck.getSecondName());
         assertEquals(properNewPatientDto.getLastName(), patientDtoToCheck.getLastName());
-        assertEquals(properNewPatientDto.getBirthDate(),
-                CustomFormatter.dateToString(patientDtoToCheck.getBirthDate()));
+        assertEquals(properNewPatientDto.getBirthDate(), patientDtoToCheck.getBirthDate());
 
         // error with same full name
         assertThrows(ConflictOnRequestException.class, () -> patientController.addPatient(properNewPatientDto));
@@ -77,6 +75,9 @@ class PatientControllerTest {
         PatientFullDto doctorDtoToCheck = patientController.getById(id);
 
         assertEquals(patientFullDto, doctorDtoToCheck);
+
+        // error with wrong id
+        assertThrows(NotFoundException.class, () -> patientController.getById(-999L));
 
         patientController.removeById(id);
 

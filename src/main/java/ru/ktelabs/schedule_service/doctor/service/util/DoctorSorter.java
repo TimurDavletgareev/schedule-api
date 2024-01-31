@@ -15,6 +15,18 @@ public class DoctorSorter {
 
             sortBy = sortBy.toLowerCase();
 
+            for (int i = 0; i < sortBy.length(); i++) {
+
+                if (sortBy.charAt(i) == '_') {
+
+                    String newBeginning = sortBy.substring(0, i);
+                    String newEnding = sortBy.substring(i + 2);
+                    String letterToUpperCase = sortBy.substring(i + 1, i + 2).toUpperCase();
+                    sortBy = newBeginning + letterToUpperCase + newEnding;
+                    break;
+                }
+            }
+
         } else {
 
             sortBy = "id";

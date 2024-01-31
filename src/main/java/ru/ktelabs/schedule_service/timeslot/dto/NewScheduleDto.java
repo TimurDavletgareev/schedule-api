@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
+import ru.ktelabs.schedule_service.util.Constants;
 
 @Data
 @Builder
@@ -13,13 +14,11 @@ public class NewScheduleDto {
     private final Long doctorId;
 
     @NotNull
-    @Size(min = 8, message = "size must be between 8 and 10")
-    @Size(max = 10, message = "size must be between 8 and 10")
+    @Size(min = Constants.DATE_SIZE, max = Constants.DATE_SIZE, message = "Date size must be " + Constants.DATE_SIZE)
     private final String date;
 
     @NotNull
-    @Size(min = 5, message = "size must be between 5 and 8")
-    @Size(max = 8, message = "size must be between 5 and 8")
+    @Size(min = Constants.TIME_SIZE, max = Constants.TIME_SIZE, message = "Date size must be " + Constants.TIME_SIZE)
     private final String startTime;
 
     @NotNull

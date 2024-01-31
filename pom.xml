@@ -22,8 +22,6 @@
 
     <dependencies>
 
-        <!-- added dependencies -->
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -106,7 +104,7 @@
             <artifactId>wsdl4j</artifactId>
         </dependency>
 
-        <!-- for jaxb plugin -->
+        <!-- jaxb plugin -->
 
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
@@ -117,6 +115,20 @@
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
+        </dependency>
+
+        <!-- Swagger -->
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.0.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+            <version>2.0.4</version>
         </dependency>
 
     </dependencies>

@@ -9,8 +9,8 @@ import java.time.format.DateTimeParseException;
 
 public class CustomFormatter {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(Constants.DATE_FORMAT);
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(Constants.TIME_FORMAT);
 
     public static LocalDate stringToDate(String dateString) {
 
@@ -21,7 +21,7 @@ public class CustomFormatter {
                 return null;
             }
         } catch (DateTimeParseException e) {
-            throw new IncorrectRequestException("- Wrong date format");
+            throw new IncorrectRequestException("- Wrong date format, must be: " + Constants.DATE_FORMAT);
         }
     }
 
@@ -43,7 +43,7 @@ public class CustomFormatter {
                 return null;
             }
         } catch (DateTimeParseException e) {
-            throw new IncorrectRequestException("- Wrong time format");
+            throw new IncorrectRequestException("- Wrong time format, must be: " + Constants.TIME_FORMAT);
         }
     }
 

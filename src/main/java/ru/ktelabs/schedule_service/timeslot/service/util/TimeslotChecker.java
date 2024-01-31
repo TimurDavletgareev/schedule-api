@@ -1,10 +1,12 @@
 package ru.ktelabs.schedule_service.timeslot.service.util;
 
 import org.springframework.stereotype.Component;
+import ru.ktelabs.schedule_service.error.exception.ConflictOnRequestException;
 import ru.ktelabs.schedule_service.timeslot.model.Timeslot;
 import ru.ktelabs.schedule_service.util.Constants;
 import ru.ktelabs.schedule_service.util.CustomFormatter;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -13,6 +15,11 @@ public class TimeslotChecker {
 
     public static boolean isCorrectNewSlot(List<Timeslot> existedSlots,
                                            Timeslot slotToCheck) {
+
+        if (slotToCheck.getDate().isBefore(LocalDate.now())) {
+
+            throw new ConflictOnRequestException("- Date cannot be before current date");
+        }
 
         if (!existedSlots.isEmpty()) {
 
@@ -27,7 +34,8 @@ public class TimeslotChecker {
                 assert closeHour != null;
                 if (startTimeToCheck.isBefore(openHour)
                         || endTimeToCheck.isAfter(closeHour)) {
-                    return false;
+
+                    throw new ConflictOnRequestException("- Timeslot is out of working hours");
                 }
 
                 LocalTime lockedStartTime = existedSlot.getStartTime();
@@ -35,7 +43,8 @@ public class TimeslotChecker {
 
                 if (!startTimeToCheck.isBefore(lockedStartTime) && startTimeToCheck.isBefore(lockedEndTime)
                         || (endTimeToCheck.isAfter(lockedStartTime) && endTimeToCheck.isBefore(lockedEndTime))) {
-                    return false;
+
+                    throw new ConflictOnRequestException("- Slot in such time period already exists");
                 }
             }
         }
